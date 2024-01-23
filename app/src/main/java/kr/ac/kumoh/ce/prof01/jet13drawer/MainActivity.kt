@@ -17,6 +17,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -78,11 +80,18 @@ fun MainDrawer() {
             topBar = {
                 MainTopBar("노래 및 가수", drawerState)
             },
+            bottomBar = {
+                MainBottomNavigation {
+                    navController.navigate(it)
+                }
+            }
         ) {
             NavHost(
                 navController = navController,
                 startDestination = "노래",
-                modifier = Modifier.padding(it).fillMaxSize()
+                modifier = Modifier
+                    .padding(it)
+                    .fillMaxSize()
             ) {
                 composable("노래") {
                     SongScreen()
@@ -160,6 +169,33 @@ fun MainTopBar(title: String, drawerState: DrawerState) {
             titleContentColor = MaterialTheme.colorScheme.primary,
         )
     )
+}
+
+@Composable
+fun MainBottomNavigation(onNavigate: (String) -> Unit) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+    ) {
+        NavigationBarItem(
+            icon = {
+                Icon(Icons.Default.Favorite, "노래 아이콘")
+            },
+            label = {
+                Text("노래")
+            },
+            selected = false,
+            onClick = { onNavigate("노래") },
+        )
+        NavigationBarItem(
+            icon = {
+                Icon(Icons.Default.AccountCircle, "가수 아이콘")
+            },
+            label = {
+                Text("가수")
+            },
+            selected = false,
+            onClick = { onNavigate("가수") },
+        )    }
 }
 
 @Composable
