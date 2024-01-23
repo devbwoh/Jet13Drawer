@@ -82,7 +82,10 @@ fun MainDrawer() {
         drawerState = drawerState,
         drawerContent = {
             MainDrawerSheet(drawerState) {
-                navController.navigate(it)
+                navController.navigate(it) {
+                    popUpTo("노래") { inclusive = true }
+                    launchSingleTop = true
+                }
             }
         },
         gesturesEnabled = true,
@@ -93,7 +96,10 @@ fun MainDrawer() {
             },
             bottomBar = {
                 MainBottomNavigation {
-                    navController.navigate(it)
+                    navController.navigate(it) {
+                        popUpTo("노래") { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             }
         ) {
