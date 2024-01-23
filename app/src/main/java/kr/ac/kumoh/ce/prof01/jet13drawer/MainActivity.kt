@@ -3,6 +3,9 @@ package kr.ac.kumoh.ce.prof01.jet13drawer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -27,7 +30,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -62,10 +70,13 @@ fun MainScreen() {
 fun MainDrawer() {
     val drawerState = rememberDrawerState(
         initialValue = DrawerValue.Closed
-        //initialValue = DrawerValue.Open
     )
 
     val navController = rememberNavController()
+
+    var title by rememberSaveable {
+        mutableStateOf("노래")
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -78,7 +89,7 @@ fun MainDrawer() {
     ) {
         Scaffold(
             topBar = {
-                MainTopBar("노래 및 가수", drawerState)
+                MainTopBar(title, drawerState)
             },
             bottomBar = {
                 MainBottomNavigation {
@@ -94,9 +105,11 @@ fun MainDrawer() {
                     .fillMaxSize()
             ) {
                 composable("노래") {
+                    title = "노래"
                     SongScreen()
                 }
                 composable("가수") {
+                    title = "가수"
                     SingerScreen()
                 }
             }
@@ -200,12 +213,28 @@ fun MainBottomNavigation(onNavigate: (String) -> Unit) {
 
 @Composable
 fun SongScreen() {
-    Text("노래", fontSize = 30.sp)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondaryContainer),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("노래", fontSize = 30.sp)
+    }
 }
 
 @Composable
 fun SingerScreen() {
-    Text("가수", fontSize = 30.sp)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.tertiaryContainer),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("가수", fontSize = 30.sp)
+    }
 }
 
 @Preview(showBackground = true)
