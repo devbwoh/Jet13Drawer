@@ -4,23 +4,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import kr.ac.kumoh.ce.prof01.jet13drawer.ui.theme.Jet13DrawerTheme
 
@@ -48,24 +59,54 @@ fun MainScreen() {
 @Composable
 fun MainDrawer() {
     val drawerState = rememberDrawerState(
-        //initialValue = DrawerValue.Closed
-        initialValue = DrawerValue.Open
+        initialValue = DrawerValue.Closed
+        //initialValue = DrawerValue.Open
     )
+
+    val navController = rememberNavController()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            MainDrawerSheet(drawerState)
+            MainDrawerSheet(drawerState) {
+                navController.navigate(it)
+            }
         },
         gesturesEnabled = true,
     ) {
-
+        Scaffold(
+            topBar = {
+                MainTopBar("노래 및 가수", drawerState)
+            },
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = "노래",
+                modifier = Modifier.padding(it).fillMaxSize()
+            ) {
+                composable("노래") {
+                    SongScreen()
+                }
+                composable("가수") {
+                    SingerScreen()
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun MainDrawerSheet(drawerState: DrawerState) {
+fun MainDrawerSheet(
+    drawerState: DrawerState,
+    onNavigate: (String) -> Unit
+) {
     val scope = rememberCoroutineScope()
+
+    fun close() {
+        scope.launch {
+            drawerState.close()
+        }
+    }
 
     ModalDrawerSheet {
         NavigationDrawerItem(
@@ -75,9 +116,8 @@ fun MainDrawerSheet(drawerState: DrawerState) {
             label = { Text("노래") },
             selected = false,
             onClick = {
-                scope.launch {
-                    drawerState.close()
-                }
+                onNavigate("노래")
+                close()
             }
         )
         NavigationDrawerItem(
@@ -87,12 +127,49 @@ fun MainDrawerSheet(drawerState: DrawerState) {
             label = { Text("가수") },
             selected = false,
             onClick = {
-                scope.launch {
-                    drawerState.close()
-                }
+                onNavigate("가수")
+                close()
             }
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainTopBar(title: String, drawerState: DrawerState) {
+    val scope = rememberCoroutineScope()
+
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        drawerState.open()
+                    }
+                }
+            ) {
+                Icon(
+                    Icons.Default.Menu,
+                    "메뉴 아이콘"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+        )
+    )
+}
+
+@Composable
+fun SongScreen() {
+    Text("노래", fontSize = 30.sp)
+}
+
+@Composable
+fun SingerScreen() {
+    Text("가수", fontSize = 30.sp)
 }
 
 @Preview(showBackground = true)
